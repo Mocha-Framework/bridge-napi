@@ -84,7 +84,6 @@ export const {
   qmlGetAllProperties,
   nativeWindowSetDarkTitleBar,
   nativeWindowStartSystemMove,
-  nativeGetQmlObjectId,
 } = native;
 
 // High-level API
