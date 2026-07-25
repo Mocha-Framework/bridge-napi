@@ -47,6 +47,9 @@ extern "C" {
     fn native_qml_get_type_name(obj_id: i32) -> *const c_char;
     fn native_qml_get_object_name(obj_id: i32) -> *const c_char;
     fn native_qml_set_property(obj_id: i32, name: *const c_char, value: *const c_char);
+    fn native_qml_set_property_int(obj_id: i32, name: *const c_char, value: i32);
+    fn native_qml_set_property_bool(obj_id: i32, name: *const c_char, value: i32);
+    fn native_qml_set_property_double(obj_id: i32, name: *const c_char, value: f64);
     fn qml_get_object_id(ptr: *mut c_void) -> i32;
     fn native_qml_get_all_properties(obj_id: i32, buf: *mut c_char, max: i32);
 
@@ -496,6 +499,27 @@ pub fn qml_set_property(obj_id: i32, name: String, value: String) -> Result<()> 
     let c_name = CString::new(name).unwrap();
     let c_value = CString::new(value).unwrap();
     unsafe { native_qml_set_property(obj_id, c_name.as_ptr(), c_value.as_ptr()); }
+    Ok(())
+}
+
+#[napi]
+pub fn qml_set_property_int(obj_id: i32, name: String, value: i32) -> Result<()> {
+    let c_name = CString::new(name).unwrap();
+    unsafe { native_qml_set_property_int(obj_id, c_name.as_ptr(), value); }
+    Ok(())
+}
+
+#[napi]
+pub fn qml_set_property_bool(obj_id: i32, name: String, value: bool) -> Result<()> {
+    let c_name = CString::new(name).unwrap();
+    unsafe { native_qml_set_property_bool(obj_id, c_name.as_ptr(), if value { 1 } else { 0 }); }
+    Ok(())
+}
+
+#[napi]
+pub fn qml_set_property_double(obj_id: i32, name: String, value: f64) -> Result<()> {
+    let c_name = CString::new(name).unwrap();
+    unsafe { native_qml_set_property_double(obj_id, c_name.as_ptr(), value); }
     Ok(())
 }
 

@@ -48,6 +48,9 @@ export {
   qmlGetTypeName,
   qmlGetObjectName,
   qmlSetProperty,
+  qmlSetPropertyInt,
+  qmlSetPropertyBool,
+  qmlSetPropertyDouble,
   qmlGetAllProperties,
   nativeWindowSetDarkTitleBar,
   nativeWindowStartSystemMove,
@@ -85,6 +88,6 @@ export declare class NativeApp implements IBridgeApp {
   listChildren(objId: number): QmlNode[];
   getQmlProperty(objId: number, name: string): string;
   getQmlProperties(objId: number): QmlProperty[];
-  setQmlProperty(objId: number, name: string, value: string): void;
+  setQmlProperty(objId: number, name: string, value: string | number | boolean): void;
   getQmlObjectId(objId: number): number;
 }

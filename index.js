@@ -36,6 +36,7 @@ try {
   try {
     native = require(join(__dirname, binaryName));
   } catch (e) {
+    console.error(e);
     throw new Error(
       `@mocha/native: Failed to load native binary for ${key}. ` +
       `Build with: cd node_modules/@mocha/native && npx napi build --platform --release`
@@ -81,6 +82,9 @@ export const {
   qmlGetTypeName,
   qmlGetObjectName,
   qmlSetProperty,
+  qmlSetPropertyInt,
+  qmlSetPropertyBool,
+  qmlSetPropertyDouble,
   qmlGetAllProperties,
   nativeWindowSetDarkTitleBar,
   nativeWindowStartSystemMove,
@@ -307,7 +311,17 @@ class NativeApp {
   }
 
   setQmlProperty(objId, name, value) {
-    qmlSetProperty(objId, name, String(value));
+    if (typeof value === "number" && Number.isInteger(value)) {
+      qmlSetPropertyInt(objId, name, value);
+    } else if (typeof value === "number") {
+      qmlSetPropertyDouble(objId, name, value);
+    } else if (typeof value === "boolean") {
+      qmlSetPropertyBool(objId, name, value);
+    } else if (value === null || value === undefined) {
+      qmlSetProperty(objId, name, "");
+    } else {
+      qmlSetProperty(objId, name, String(value));
+    }
   }
 
   _buildQmlNode(id) {
