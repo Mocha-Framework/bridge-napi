@@ -23,9 +23,11 @@ const key = getPlatformKey();
 const binaryName = platformTriples[key] || platformTriples["linux-x64"];
 
 if (process.platform === "win32") {
-  const qtDir = process.env.QT6_DIR || "C:\\Qt\\6.8.2\\msvc2022_64";
-  const qtBin = join(qtDir, "bin");
-  process.env.PATH = `${qtBin};${process.env.PATH}`;
+  const qtDir = process.env.QT6_DIR;
+  if (qtDir) {
+    const qtBin = join(qtDir, "bin");
+    process.env.PATH = `${qtBin};${process.env.PATH}`;
+  }
 }
 
 let native;
@@ -38,8 +40,8 @@ try {
   } catch (e) {
     console.error(e);
     throw new Error(
-      `@mocha/native: Failed to load native binary for ${key}. ` +
-      `Build with: cd node_modules/@mocha/native && npx napi build --platform --release`
+      `@mocha/bridge-napi: Failed to load native binary for ${key}. ` +
+      `Build with: cd node_modules/@mocha/bridge-napi && npm run build`
     );
   }
 }

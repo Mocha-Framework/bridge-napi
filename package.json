@@ -23,6 +23,11 @@
     "universal": "napi universal",
     "version": "napi version"
   },
+  "files": [
+    "index.js",
+    "native.d.ts",
+    "*.node"
+  ],
   "dependencies": {
     "@mocha/bridge-api": "^0.1.0",
     "@mocha/bridge-qt": "^0.1.0"
