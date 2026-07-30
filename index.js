@@ -135,6 +135,9 @@ class NativeApp {
       join(basePath, "design-system"),
       join(basePath, "..", "design-system"),
       join(basePath, "..", "..", "design-system"),
+      join(basePath, "node_modules", "@mocha-ds", "qml"),
+      join(basePath, "..", "node_modules", "@mocha-ds", "qml"),
+      join(basePath, "..", "..", "node_modules", "@mocha-ds", "qml"),
     ];
     for (const c of candidates) {
       if (existsSync(join(c, "MochaDS", "qmldir"))) {
