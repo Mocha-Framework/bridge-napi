@@ -1,6 +1,6 @@
 {
   "name": "@mocha/bridge-napi",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Mocha Bridge NAPI - Rust napi-rs bindings for the Qt bridge",
   "type": "module",
   "main": "./index.js",
