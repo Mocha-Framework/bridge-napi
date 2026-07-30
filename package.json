@@ -24,8 +24,8 @@
     "version": "napi version"
   },
   "dependencies": {
-    "@mocha/bridge-api": "workspace:*",
-    "@mocha/bridge-qt": "workspace:*"
+    "@mocha/bridge-api": "^0.1.0",
+    "@mocha/bridge-qt": "^0.1.0"
   },
   "devDependencies": {
     "@napi-rs/cli": "^3.0.0"
