@@ -1,0 +1,18 @@
+{
+  "name": "@mocha-framework/bridge-napi-linux-arm64-gnu",
+  "version": "0.2.0-alpha.0",
+  "cpu": [
+    "arm64"
+  ],
+  "main": "mocha-native.linux-arm64-gnu.node",
+  "files": [
+    "mocha-native.linux-arm64-gnu.node"
+  ],
+  "description": "Mocha Bridge NAPI - Rust napi-rs bindings for the Qt bridge",
+  "os": [
+    "linux"
+  ],
+  "libc": [
+    "glibc"
+  ]
+}

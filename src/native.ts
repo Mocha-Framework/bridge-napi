@@ -13,7 +13,7 @@ async function loadNative(): Promise<any> {
     return native;
   } catch {
     throw new Error(
-      "@mocha/bridge-napi not built. Run: cd packages/bridge-napi && npm run build"
+      "@mocha-framework/bridge-napi not built. Run: cd packages/bridge-napi && npm run build"
     );
   }
 }

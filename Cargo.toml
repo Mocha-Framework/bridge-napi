@@ -15,4 +15,4 @@ napi-build = "2"
 cc = { version = "1", features = ["parallel"] }
 
 [profile.release]
-lto = true
+lto = "off"

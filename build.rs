@@ -34,7 +34,7 @@ fn main() {
     let moc_status = moc_cmd
         .arg("-o")
         .arg(&moc_out)
-        .arg(bridge_qt_src.join("qt_bridge.cpp"))
+        .arg(src_dir.join("qt_bridge.cpp"))
         .status()
         .expect("moc failed — is Qt6 installed?");
     if !moc_status.success() {
@@ -58,10 +58,10 @@ fn main() {
         panic!("moc (list_model) failed — check Qt6 installation");
     }
 
-    // Compile C++ bridge from bridge-qt source
+    // Compile C++ bridge from bridge-napi source (includes mobile/touch APIs)
     let mut cc = cc::Build::new();
     cc.cpp(true)
-        .file(bridge_qt_src.join("qt_bridge.cpp"))
+        .file(src_dir.join("qt_bridge.cpp"))
         .file(bridge_qt_src.join("mocha_list_model.cpp"))
         .std("c++17")
         .pic(true);
@@ -75,8 +75,9 @@ fn main() {
     for inc in &qt.include_dirs {
         cc.include(inc);
     }
-    // Add bridge-napi/src for generated moc files
+    // Add bridge-napi/src for generated moc files and bridge-qt/src for the header
     cc.include(&src_dir);
+    cc.include(&bridge_qt_src);
 
     // macOS: framework includes need special handling
     #[cfg(target_os = "macos")]

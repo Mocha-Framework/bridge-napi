@@ -65,6 +65,15 @@ extern "C" {
 
     // MochaPropertyMap QObject setter
     fn mocha_property_map_set_qobject(obj: *mut c_void, key: *const c_char, qobj: *mut c_void);
+
+    // ── Mobile / Touch / Haptics / Screen ──
+    fn qt_is_touch_device() -> i32;
+    fn qt_haptic(style: i32);
+    fn qt_pixel_ratio_fixed() -> i32;
+    fn qt_prefers_reduced_motion() -> i32;
+    fn qt_keyboard_height() -> i32;
+    fn qt_safe_area_insets(top: *mut i32, right: *mut i32, bottom: *mut i32, left: *mut i32);
+    fn qt_qml_register_native_bridge(engine: *mut c_void);
 }
 
 struct NativeState {
@@ -605,5 +614,86 @@ pub fn native_proxy_set_qobject(proxy_id: u32, name: String, qobj_id: u32) -> Re
     let qobj = state.get_ptr(qobj_id)
         .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid qobject handle"))?;
     unsafe { mocha_property_map_set_qobject(proxy, c_name.as_ptr(), qobj); }
+    Ok(())
+}
+
+// ── Mobile / Touch / Haptics / Screen ────────────────────────────────────
+
+#[napi]
+pub fn native_is_touch_device() -> bool {
+    unsafe { qt_is_touch_device() != 0 }
+}
+
+#[napi]
+pub fn native_haptic(style: String) -> Result<()> {
+    let code = match style.as_str() {
+        "selection"           => 0,
+        "impactLight"         => 1,
+        "impactMedium"        => 2,
+        "impactHeavy"         => 3,
+        "notificationSuccess" => 4,
+        "notificationWarning" => 5,
+        "notificationError"   => 6,
+        _ => return Err(Error::new(
+            Status::InvalidArg,
+            "unknown haptic style — expected one of: selection, impactLight, impactMedium, impactHeavy, notificationSuccess, notificationWarning, notificationError",
+        )),
+    };
+    unsafe { qt_haptic(code); }
+    Ok(())
+}
+
+#[napi]
+pub fn native_keyboard_height() -> i32 {
+    unsafe { qt_keyboard_height() }
+}
+
+#[napi]
+pub fn native_prefers_reduced_motion() -> bool {
+    unsafe { qt_prefers_reduced_motion() != 0 }
+}
+
+#[napi(object)]
+pub struct SafeAreaInsets {
+    pub top: f64,
+    pub right: f64,
+    pub bottom: f64,
+    pub left: f64,
+}
+
+#[napi(object)]
+pub struct ScreenInfo {
+    pub pixel_ratio: f64,
+    pub safe_area_insets: SafeAreaInsets,
+    pub prefers_reduced_motion: bool,
+    pub is_touch_device: bool,
+}
+
+#[napi]
+pub fn native_screen_info() -> ScreenInfo {
+    let mut t = 0i32;
+    let mut r = 0i32;
+    let mut b = 0i32;
+    let mut l = 0i32;
+    unsafe { qt_safe_area_insets(&mut t, &mut r, &mut b, &mut l); }
+    ScreenInfo {
+        pixel_ratio: unsafe { qt_pixel_ratio_fixed() } as f64 / 100.0,
+        safe_area_insets: SafeAreaInsets {
+            top: t as f64,
+            right: r as f64,
+            bottom: b as f64,
+            left: l as f64,
+        },
+        prefers_reduced_motion: unsafe { qt_prefers_reduced_motion() != 0 },
+        is_touch_device: unsafe { qt_is_touch_device() != 0 },
+    }
+}
+
+#[napi]
+pub fn qml_register_native_bridge(engine_id: u32) -> Result<()> {
+    let state = STATE.lock().map_err(|e| Error::from_reason(e.to_string()))?;
+    let engine = state.get_ptr(engine_id)
+        .ok_or_else(|| Error::new(Status::InvalidArg, "Invalid engine handle"))?;
+    unsafe { qt_qml_register_native_bridge(engine); }
     Ok(())
 }

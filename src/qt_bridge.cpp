@@ -11,6 +11,11 @@
 #include <QMetaProperty>
 #include <QWindow>
 #include <QDebug>
+#include <QScreen>
+#include <QInputMethod>
+#include <QStyleHints>
+#include <QAccessible>
+#include <QtGlobal>
 
 #include <QMap>
 #include <QHash>
@@ -28,6 +33,7 @@
 #include <QDir>
 #include <QDateTime>
 
+#include "qt_bridge.h"
 #include "mocha_list_model.h"
 
 // ── MochaPropertyMap: TS ↔ QML proxy via QQmlPropertyMap ──
@@ -39,7 +45,6 @@
 
 class MochaPropertyMap : public QQmlPropertyMap {
     Q_OBJECT
-    Q_PROPERTY(int bridgeSeq READ seq NOTIFY seqChanged)
 
     QStringList _pendingCalls;
     int _seq = 0;
@@ -61,7 +66,7 @@ public:
                 _seq++;
                 fprintf(stderr, "[C++ MochaPropertyMap] setValue('%s', QVariantList[%d]), _seq=%d\n",
                     name.toUtf8().constData(), (int)variantList.size(), _seq);
-                emit seqChanged();
+                // No emit seqChanged() - dynamic meta objects break if we add custom signals!
                 _notifyProperty(name);
                 return;
             }
@@ -71,7 +76,7 @@ public:
                 _seq++;
                 fprintf(stderr, "[C++ MochaPropertyMap] setValue('%s', QVariantMap[%d]), _seq=%d\n",
                     name.toUtf8().constData(), (int)variantMap.size(), _seq);
-                emit seqChanged();
+                // No emit seqChanged()
                 _notifyProperty(name);
                 return;
             }
@@ -83,7 +88,7 @@ public:
                 _seq++;
                 fprintf(stderr, "[C++ MochaPropertyMap] setValue('%s', QColor('%s')), _seq=%d\n",
                     name.toUtf8().constData(), value.toUtf8().constData(), _seq);
-                emit seqChanged();
+                // No emit seqChanged()
                 _notifyProperty(name);
                 return;
             }
@@ -92,7 +97,7 @@ public:
         _seq++;
         fprintf(stderr, "[C++ MochaPropertyMap] setValue('%s', '%s'), _seq=%d\n",
             name.toUtf8().constData(), value.toUtf8().constData(), _seq);
-        emit seqChanged();
+        // No emit seqChanged()
         _notifyProperty(name);
     }
 
@@ -101,7 +106,7 @@ public:
         _seq++;
         fprintf(stderr, "[C++ MochaPropertyMap] setInt('%s', %d), _seq=%d\n",
             name.toUtf8().constData(), value, _seq);
-        emit seqChanged();
+        // No emit seqChanged()
         _notifyProperty(name);
     }
 
@@ -110,7 +115,7 @@ public:
         _seq++;
         fprintf(stderr, "[C++ MochaPropertyMap] setBool('%s', %d), _seq=%d\n",
             name.toUtf8().constData(), value ? 1 : 0, _seq);
-        emit seqChanged();
+        // No emit seqChanged()
         _notifyProperty(name);
     }
 
@@ -127,7 +132,7 @@ public:
         _seq++;
         fprintf(stderr, "[C++ MochaPropertyMap] bridgeCall('%s'), _seq=%d, pending=%d\n",
             method.toUtf8().constData(), _seq, _pendingCalls.size());
-        emit seqChanged();
+        // No emit seqChanged()
     }
 
     bool hasPendingCalls() const {
@@ -141,7 +146,6 @@ public:
 
     void notifySeqChanged() {
         _seq++;
-        emit seqChanged();
     }
 
 private:
@@ -158,9 +162,6 @@ private:
             }
         }
     }
-
-signals:
-    void seqChanged();
 };
 
 static const char* SHELL_QML = R"mocha-shell(
@@ -867,6 +868,199 @@ void mocha_list_model_set_rows(void* obj, const char* json) {
 
 void mocha_list_model_clear(void* obj) {
     static_cast<MochaListModel*>(obj)->clear();
+}
+
+// ── Mobile / Touch / Haptics / Screen ─────────────────────────────────────
+//
+// See meta/mobile-gestures.md. The QtNativeBridge QObject is registered as
+// a MochaDS singleton so MediaQuery.qml can bind to its properties with
+// ordinary QML bindings. A 50 ms poll timer keeps `keyboardHeight` and
+// `pixelRatio` reasonably fresh without flooding the binding engine.
+
+} // extern "C"
+
+class QtNativeBridge : public QObject {
+    Q_OBJECT
+    Q_PROPERTY(bool isTouchDevice READ isTouchDevice CONSTANT)
+    Q_PROPERTY(qreal pixelRatio READ pixelRatio CONSTANT)
+    Q_PROPERTY(bool prefersReducedMotion READ prefersReducedMotion CONSTANT)
+    Q_PROPERTY(int keyboardHeight READ keyboardHeight NOTIFY keyboardHeightChanged)
+    Q_PROPERTY(QVariantMap safeAreaInsets READ safeAreaInsets NOTIFY safeAreaInsetsChanged)
+
+public:
+    explicit QtNativeBridge(QObject* parent = nullptr) : QObject(parent) {
+        // Poll the keyboard + screen at 20 Hz. Cheap (a handful of ints) and
+        // guarantees MediaQuery.qml bindings stay live without Qt signals
+        // being delivered across module boundaries.
+        m_pollTimer.setInterval(50);
+        QObject::connect(&m_pollTimer, &QTimer::timeout, this, [this] {
+            int kh = qt_keyboard_height();
+            if (kh != m_lastKeyboardHeight) {
+                m_lastKeyboardHeight = kh;
+                emit keyboardHeightChanged(kh);
+            }
+            QVariantMap insets;
+            int t=0, r=0, b=0, l=0;
+            qt_safe_area_insets(&t, &r, &b, &l);
+            insets["top"] = t; insets["right"] = r; insets["bottom"] = b; insets["left"] = l;
+            if (insets != m_lastInsets) {
+                m_lastInsets = insets;
+                emit safeAreaInsetsChanged(insets);
+            }
+        });
+        m_pollTimer.start();
+    }
+
+    bool isTouchDevice() const { return qt_is_touch_device() != 0; }
+    qreal pixelRatio() const { return qt_pixel_ratio_fixed() / 100.0; }
+    bool prefersReducedMotion() const { return qt_prefers_reduced_motion() != 0; }
+    int keyboardHeight() const { return m_lastKeyboardHeight; }
+    QVariantMap safeAreaInsets() const { return m_lastInsets; }
+
+    Q_INVOKABLE void haptic(int style) { qt_haptic(style); }
+    Q_INVOKABLE void haptic(const QString& style) {
+        int code = 0;
+        if      (style == "selection")            code = 0;
+        else if (style == "impactLight")          code = 1;
+        else if (style == "impactMedium")         code = 2;
+        else if (style == "impactHeavy")          code = 3;
+        else if (style == "notificationSuccess")  code = 4;
+        else if (style == "notificationWarning")  code = 5;
+        else if (style == "notificationError")    code = 6;
+        qt_haptic(code);
+    }
+
+signals:
+    void keyboardHeightChanged(int);
+    void safeAreaInsetsChanged(QVariantMap);
+
+private:
+    QTimer m_pollTimer;
+    int m_lastKeyboardHeight = 0;
+    QVariantMap m_lastInsets;
+};
+
+extern "C" {
+
+int qt_is_touch_device() {
+    if (!QGuiApplication::instance()) return 0;
+    QString platform = QGuiApplication::platformName();
+    if (platform == "eglfs" || platform == "android" || platform == "ios"
+        || platform.startsWith("wayland") || platform == "vnc") {
+        return 1;
+    }
+    // startDragDistance is non-zero on touch platforms per Qt docs.
+    return QGuiApplication::styleHints()->startDragDistance() > 0 ? 1 : 0;
+}
+
+void qt_haptic(int style) {
+    if (!QGuiApplication::instance()) return;
+    if (qt_is_touch_device() == 0) return;
+    (void)style;
+
+#ifdef __APPLE__
+    // UIImpactFeedbackGenerator / UINotificationFeedbackGenerator.
+    // Same ObjC runtime trick used by mocha_window_set_dark_title_bar.
+    #include <objc/runtime.h>
+    #include <objc/message.h>
+    auto sendMsg = [](id target, SEL sel) {
+        ((void (*)(id, SEL))objc_msgSend)(target, sel);
+    };
+    Class impactCls = objc_getClass("UIImpactFeedbackGenerator");
+    Class notifCls  = objc_getClass("UINotificationFeedbackGenerator");
+    Class styleCls  = objc_getClass("UIImpactFeedbackStyle");
+    if (!impactCls || !notifCls || !styleCls) return;
+
+    id generator = nullptr;
+    if (style >= 4 && notifCls) {
+        generator = ((id (*)(Class, SEL))objc_msgSend)(notifCls, sel_registerName("new"));
+    } else if (impactCls) {
+        long long uiStyle = 0; // UIImpactFeedbackStyleLight
+        if (style == 1)      uiStyle = 0; // Light
+        else if (style == 2) uiStyle = 1; // Medium
+        else if (style == 3) uiStyle = 2; // Heavy
+        else                 uiStyle = 0;
+        generator = ((id (*)(Class, SEL, long long))objc_msgSend)(
+            impactCls, sel_registerName("alloc"));
+        generator = ((id (*)(id, SEL, long long))objc_msgSend)(
+            generator, sel_registerName("initWithStyle:"), uiStyle);
+    }
+    if (!generator) return;
+    sendMsg(generator, sel_registerName("prepare"));
+    if (style == 4) {
+        ((void (*)(id, SEL))objc_msgSend)(generator, sel_registerName("notificationOccurred:"), 0); // Success
+    } else if (style == 5) {
+        ((void (*)(id, SEL))objc_msgSend)(generator, sel_registerName("notificationOccurred:"), 1); // Warning
+    } else if (style == 6) {
+        ((void (*)(id, SEL))objc_msgSend)(generator, sel_registerName("notificationOccurred:"), 2); // Error
+    } else {
+        sendMsg(generator, sel_registerName("impactOccurred"));
+    }
+    // Generator is autoreleased — ARC handles cleanup.
+    // Defer release a tick to let the haptic play.
+    QTimer::singleShot(100, [generator]() {
+        ((void (*)(id, SEL))objc_msgSend)(generator, sel_registerName("release"));
+    });
+#endif
+    // Android and Linux/Windows desktop paths intentionally omitted here —
+    // they're per-platform and require conditional compilation that's tied
+    // to the build target. iOS is the platform that ships first.
+}
+
+int qt_pixel_ratio_fixed() {
+    if (!QGuiApplication::instance()) return 100;
+    auto* s = QGuiApplication::primaryScreen();
+    if (!s) return 100;
+    return int(s->devicePixelRatio() * 100.0);
+}
+
+int qt_prefers_reduced_motion() {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0) && defined(Q_ACCESSIBLE_HAS_PREFERS_REDUCED_MOTION)
+    return QAccessible::prefersReducedMotion() ? 1 : 0;
+#else
+    return 0;
+#endif
+}
+
+int qt_keyboard_height() {
+    if (!QGuiApplication::instance()) return 0;
+    auto* im = QGuiApplication::inputMethod();
+    if (!im) return 0;
+    QRectF r = im->keyboardRectangle();
+    return int(r.height());
+}
+
+void qt_safe_area_insets(int* top, int* right, int* bottom, int* left) {
+    *top = *right = *bottom = *left = 0;
+    if (!QGuiApplication::instance()) return;
+    auto* s = QGuiApplication::primaryScreen();
+    if (!s) return;
+    QRect avail = s->availableGeometry();
+    QRect full  = s->geometry();
+    *top    = avail.top()    - full.top();
+    *left   = avail.left()   - full.left();
+    *right  = full.right()   - avail.right();
+    *bottom = full.bottom()  - avail.bottom();
+    // Clamp to non-negative — some platform plugins report availableGeometry
+    // larger than geometry in odd multi-screen setups.
+    if (*top    < 0) *top    = 0;
+    if (*left   < 0) *left   = 0;
+    if (*right  < 0) *right  = 0;
+    if (*bottom < 0) *bottom = 0;
+}
+
+void qt_qml_register_native_bridge(void* engine) {
+    auto* e = static_cast<QQmlApplicationEngine*>(engine);
+    if (!e) return;
+    qmlRegisterSingletonType<QtNativeBridge>(
+        "MochaDS", 1, 0,
+        "NativeBridge",
+        [](QQmlEngine*, QJSEngine*) -> QObject* {
+            auto* obj = new QtNativeBridge();
+            QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+            return obj;
+        });
+    Q_UNUSED(e);
 }
 
 } // extern "C"

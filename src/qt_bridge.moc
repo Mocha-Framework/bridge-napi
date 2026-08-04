@@ -38,9 +38,8 @@ template <> constexpr inline auto MochaPropertyMap::qt_create_metaobjectdata<qt_
     namespace QMC = QtMocConstants;
     QtMocHelpers::StringRefStorage qt_stringData {
         "MochaPropertyMap",
-        "seqChanged",
-        "",
         "setValue",
+        "",
         "name",
         "value",
         "setInt",
@@ -49,41 +48,36 @@ template <> constexpr inline auto MochaPropertyMap::qt_create_metaobjectdata<qt_
         "QVariant",
         "get",
         "bridgeCall",
-        "method",
-        "bridgeSeq"
+        "method"
     };
 
     QtMocHelpers::UintData qt_methods {
-        // Signal 'seqChanged'
-        QtMocHelpers::SignalData<void()>(1, 2, QMC::AccessPublic, QMetaType::Void),
         // Method 'setValue'
-        QtMocHelpers::MethodData<void(QString, QString)>(3, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::QString, 4 }, { QMetaType::QString, 5 },
+        QtMocHelpers::MethodData<void(QString, QString)>(1, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::QString, 3 }, { QMetaType::QString, 4 },
         }}),
         // Method 'setInt'
-        QtMocHelpers::MethodData<void(QString, int)>(6, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::QString, 4 }, { QMetaType::Int, 5 },
+        QtMocHelpers::MethodData<void(QString, int)>(5, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::QString, 3 }, { QMetaType::Int, 4 },
         }}),
         // Method 'setBool'
-        QtMocHelpers::MethodData<void(QString, bool)>(7, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::QString, 4 }, { QMetaType::Bool, 5 },
+        QtMocHelpers::MethodData<void(QString, bool)>(6, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::QString, 3 }, { QMetaType::Bool, 4 },
         }}),
         // Method 'getValue'
-        QtMocHelpers::MethodData<QVariant(QString) const>(8, 2, QMC::AccessPublic, 0x80000000 | 9, {{
-            { QMetaType::QString, 4 },
+        QtMocHelpers::MethodData<QVariant(QString) const>(7, 2, QMC::AccessPublic, 0x80000000 | 8, {{
+            { QMetaType::QString, 3 },
         }}),
         // Method 'get'
-        QtMocHelpers::MethodData<QVariant(QString) const>(10, 2, QMC::AccessPublic, 0x80000000 | 9, {{
-            { QMetaType::QString, 4 },
+        QtMocHelpers::MethodData<QVariant(QString) const>(9, 2, QMC::AccessPublic, 0x80000000 | 8, {{
+            { QMetaType::QString, 3 },
         }}),
         // Method 'bridgeCall'
-        QtMocHelpers::MethodData<void(QString)>(11, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::QString, 12 },
+        QtMocHelpers::MethodData<void(QString)>(10, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::QString, 11 },
         }}),
     };
     QtMocHelpers::UintData qt_properties {
-        // property 'bridgeSeq'
-        QtMocHelpers::PropertyData<int>(13, QMetaType::Int, QMC::DefaultPropertyFlags, 0),
     };
     QtMocHelpers::UintData qt_enums {
     };
@@ -105,27 +99,15 @@ void MochaPropertyMap::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
     auto *_t = static_cast<MochaPropertyMap *>(_o);
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
-        case 0: _t->seqChanged(); break;
-        case 1: _t->setValue((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2]))); break;
-        case 2: _t->setInt((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<int>>(_a[2]))); break;
-        case 3: _t->setBool((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<bool>>(_a[2]))); break;
-        case 4: { QVariant _r = _t->getValue((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])));
+        case 0: _t->setValue((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2]))); break;
+        case 1: _t->setInt((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<int>>(_a[2]))); break;
+        case 2: _t->setBool((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<bool>>(_a[2]))); break;
+        case 3: { QVariant _r = _t->getValue((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])));
             if (_a[0]) *reinterpret_cast<QVariant*>(_a[0]) = std::move(_r); }  break;
-        case 5: { QVariant _r = _t->get((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])));
+        case 4: { QVariant _r = _t->get((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])));
             if (_a[0]) *reinterpret_cast<QVariant*>(_a[0]) = std::move(_r); }  break;
-        case 6: _t->bridgeCall((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1]))); break;
+        case 5: _t->bridgeCall((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1]))); break;
         default: ;
-        }
-    }
-    if (_c == QMetaObject::IndexOfMethod) {
-        if (QtMocHelpers::indexOfMethod<void (MochaPropertyMap::*)()>(_a, &MochaPropertyMap::seqChanged, 0))
-            return;
-    }
-    if (_c == QMetaObject::ReadProperty) {
-        void *_v = _a[0];
-        switch (_id) {
-        case 0: *reinterpret_cast<int*>(_v) = _t->seq(); break;
-        default: break;
         }
     }
 }
@@ -149,27 +131,161 @@ int MochaPropertyMap::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 6;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        if (_id < 6)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 7;
+        _id -= 6;
+    }
+    return _id;
+}
+namespace {
+struct qt_meta_tag_ZN14QtNativeBridgeE_t {};
+} // unnamed namespace
+
+template <> constexpr inline auto QtNativeBridge::qt_create_metaobjectdata<qt_meta_tag_ZN14QtNativeBridgeE_t>()
+{
+    namespace QMC = QtMocConstants;
+    QtMocHelpers::StringRefStorage qt_stringData {
+        "QtNativeBridge",
+        "keyboardHeightChanged",
+        "",
+        "safeAreaInsetsChanged",
+        "QVariantMap",
+        "haptic",
+        "style",
+        "isTouchDevice",
+        "pixelRatio",
+        "prefersReducedMotion",
+        "keyboardHeight",
+        "safeAreaInsets"
+    };
+
+    QtMocHelpers::UintData qt_methods {
+        // Signal 'keyboardHeightChanged'
+        QtMocHelpers::SignalData<void(int)>(1, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Int, 2 },
+        }}),
+        // Signal 'safeAreaInsetsChanged'
+        QtMocHelpers::SignalData<void(QVariantMap)>(3, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { 0x80000000 | 4, 2 },
+        }}),
+        // Method 'haptic'
+        QtMocHelpers::MethodData<void(int)>(5, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Int, 6 },
+        }}),
+        // Method 'haptic'
+        QtMocHelpers::MethodData<void(const QString &)>(5, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::QString, 6 },
+        }}),
+    };
+    QtMocHelpers::UintData qt_properties {
+        // property 'isTouchDevice'
+        QtMocHelpers::PropertyData<bool>(7, QMetaType::Bool, QMC::DefaultPropertyFlags | QMC::Constant),
+        // property 'pixelRatio'
+        QtMocHelpers::PropertyData<qreal>(8, QMetaType::QReal, QMC::DefaultPropertyFlags | QMC::Constant),
+        // property 'prefersReducedMotion'
+        QtMocHelpers::PropertyData<bool>(9, QMetaType::Bool, QMC::DefaultPropertyFlags | QMC::Constant),
+        // property 'keyboardHeight'
+        QtMocHelpers::PropertyData<int>(10, QMetaType::Int, QMC::DefaultPropertyFlags, 0),
+        // property 'safeAreaInsets'
+        QtMocHelpers::PropertyData<QVariantMap>(11, 0x80000000 | 4, QMC::DefaultPropertyFlags | QMC::EnumOrFlag, 1),
+    };
+    QtMocHelpers::UintData qt_enums {
+    };
+    return QtMocHelpers::metaObjectData<QtNativeBridge, qt_meta_tag_ZN14QtNativeBridgeE_t>(QMC::MetaObjectFlag{}, qt_stringData,
+            qt_methods, qt_properties, qt_enums);
+}
+Q_CONSTINIT const QMetaObject QtNativeBridge::staticMetaObject = { {
+    QMetaObject::SuperData::link<QObject::staticMetaObject>(),
+    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN14QtNativeBridgeE_t>.stringdata,
+    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN14QtNativeBridgeE_t>.data,
+    qt_static_metacall,
+    nullptr,
+    qt_staticMetaObjectRelocatingContent<qt_meta_tag_ZN14QtNativeBridgeE_t>.metaTypes,
+    nullptr
+} };
+
+void QtNativeBridge::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+{
+    auto *_t = static_cast<QtNativeBridge *>(_o);
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: _t->keyboardHeightChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 1: _t->safeAreaInsetsChanged((*reinterpret_cast<std::add_pointer_t<QVariantMap>>(_a[1]))); break;
+        case 2: _t->haptic((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 3: _t->haptic((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1]))); break;
+        default: ;
+        }
+    }
+    if (_c == QMetaObject::IndexOfMethod) {
+        if (QtMocHelpers::indexOfMethod<void (QtNativeBridge::*)(int )>(_a, &QtNativeBridge::keyboardHeightChanged, 0))
+            return;
+        if (QtMocHelpers::indexOfMethod<void (QtNativeBridge::*)(QVariantMap )>(_a, &QtNativeBridge::safeAreaInsetsChanged, 1))
+            return;
+    }
+    if (_c == QMetaObject::ReadProperty) {
+        void *_v = _a[0];
+        switch (_id) {
+        case 0: *reinterpret_cast<bool*>(_v) = _t->isTouchDevice(); break;
+        case 1: *reinterpret_cast<qreal*>(_v) = _t->pixelRatio(); break;
+        case 2: *reinterpret_cast<bool*>(_v) = _t->prefersReducedMotion(); break;
+        case 3: *reinterpret_cast<int*>(_v) = _t->keyboardHeight(); break;
+        case 4: *reinterpret_cast<QVariantMap*>(_v) = _t->safeAreaInsets(); break;
+        default: break;
+        }
+    }
+}
+
+const QMetaObject *QtNativeBridge::metaObject() const
+{
+    return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
+}
+
+void *QtNativeBridge::qt_metacast(const char *_clname)
+{
+    if (!_clname) return nullptr;
+    if (!strcmp(_clname, qt_staticMetaObjectStaticContent<qt_meta_tag_ZN14QtNativeBridgeE_t>.strings))
+        return static_cast<void*>(this);
+    return QObject::qt_metacast(_clname);
+}
+
+int QtNativeBridge::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QObject::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 4)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 4;
+    }
+    if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        if (_id < 4)
+            *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
+        _id -= 4;
     }
     if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::BindableProperty
             || _c == QMetaObject::RegisterPropertyMetaType) {
         qt_static_metacall(this, _c, _id, _a);
-        _id -= 1;
+        _id -= 5;
     }
     return _id;
 }
 
 // SIGNAL 0
-void MochaPropertyMap::seqChanged()
+void QtNativeBridge::keyboardHeightChanged(int _t1)
 {
-    QMetaObject::activate(this, &staticMetaObject, 0, nullptr);
+    QMetaObject::activate<void>(this, &staticMetaObject, 0, nullptr, _t1);
+}
+
+// SIGNAL 1
+void QtNativeBridge::safeAreaInsetsChanged(QVariantMap _t1)
+{
+    QMetaObject::activate<void>(this, &staticMetaObject, 1, nullptr, _t1);
 }
 QT_WARNING_POP

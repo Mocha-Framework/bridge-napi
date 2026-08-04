@@ -1,14 +1,5 @@
-// @mocha/bridge-napi — type declarations
-// Implements IBridgeApp from @mocha/bridge-api
-export type {
-  IBridgeApp,
-  IBridgeFFI,
-  IBridgeFactory,
-  QmlNode,
-  QmlProperty,
-  ShellWindowProps,
-  BridgeRuntime,
-} from "@mocha/bridge-api";
+// @mocha-framework/bridge-napi — type declarations
+// Types (IBridgeApp, etc.) available at @mocha-framework/core/bridge
 
 export {
   nativeAppCreate,
@@ -54,7 +45,37 @@ export {
   qmlGetAllProperties,
   nativeWindowSetDarkTitleBar,
   nativeWindowStartSystemMove,
+  // ── Mobile / Touch / Haptics / Screen (see meta/mobile-gestures.md §4) ──
+  nativeIsTouchDevice,
+  nativeHaptic,
+  nativeKeyboardHeight,
+  nativePreferReducedMotion,
+  nativeScreenInfo,
+  qmlRegisterNativeBridge,
 } from "./index.js";
+
+export type HapticStyle =
+  | 'selection'
+  | 'impactLight'
+  | 'impactMedium'
+  | 'impactHeavy'
+  | 'notificationSuccess'
+  | 'notificationWarning'
+  | 'notificationError';
+
+export interface SafeAreaInsets {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+export interface ScreenInfo {
+  pixelRatio: number;
+  safeAreaInsets: SafeAreaInsets;
+  prefersReducedMotion: boolean;
+  isTouchDevice: boolean;
+}
 
 export declare function createNativeApp(): Promise<IBridgeApp>;
 export declare function getNativeApp(): IBridgeApp | null;
@@ -88,6 +109,16 @@ export declare class NativeApp implements IBridgeApp {
   listChildren(objId: number): QmlNode[];
   getQmlProperty(objId: number, name: string): string;
   getQmlProperties(objId: number): QmlProperty[];
-  setQmlProperty(objId: number, name: string, value: string | number | boolean): void;
+  setQmlProperty(objId: number, name: string, value: string): void;
   getQmlObjectId(objId: number): number;
+  /** True if the runtime exposes a touch digitizer. */
+  isTouchDevice(): boolean;
+  /** Trigger a haptic feedback pattern (no-op on desktop). */
+  haptic(style: HapticStyle): void;
+  /** Current virtual-keyboard height in px (0 when hidden). */
+  getKeyboardHeight(): number;
+  /** Bundled screen + safe-area + motion preferences. */
+  getScreenInfo(): ScreenInfo;
+  /** Register MochaDS.NativeBridge singleton on the engine. */
+  registerNativeBridge(): void;
 }

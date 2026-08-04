@@ -40,8 +40,8 @@ try {
   } catch (e) {
     console.error(e);
     throw new Error(
-      `@mocha/bridge-napi: Failed to load native binary for ${key}. ` +
-      `Build with: cd node_modules/@mocha/bridge-napi && npm run build`
+      `@mocha-framework/bridge-napi: Failed to load native binary for ${key}. ` +
+      `Build with: cd node_modules/@mocha-framework/bridge-napi && npm run build`
     );
   }
 }
@@ -135,9 +135,9 @@ class NativeApp {
       join(basePath, "design-system"),
       join(basePath, "..", "design-system"),
       join(basePath, "..", "..", "design-system"),
-      join(basePath, "node_modules", "@mocha-ds", "qml"),
-      join(basePath, "..", "node_modules", "@mocha-ds", "qml"),
-      join(basePath, "..", "..", "node_modules", "@mocha-ds", "qml"),
+      join(basePath, "node_modules", "@mocha-framework", "ds-qml"),
+      join(basePath, "..", "node_modules", "@mocha-framework", "ds-qml"),
+      join(basePath, "..", "..", "node_modules", "@mocha-framework", "ds-qml"),
     ];
     for (const c of candidates) {
       if (existsSync(join(c, "MochaDS", "qmldir"))) {

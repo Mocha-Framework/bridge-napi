@@ -1,0 +1,15 @@
+{
+  "name": "@mocha-framework/bridge-napi-win32-x64-msvc",
+  "version": "0.2.0-alpha.0",
+  "cpu": [
+    "x64"
+  ],
+  "main": "mocha-native.win32-x64-msvc.node",
+  "files": [
+    "mocha-native.win32-x64-msvc.node"
+  ],
+  "description": "Mocha Bridge NAPI - Rust napi-rs bindings for the Qt bridge",
+  "os": [
+    "win32"
+  ]
+}

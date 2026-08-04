@@ -1,0 +1,15 @@
+{
+  "name": "@mocha-framework/bridge-napi-darwin-arm64",
+  "version": "0.2.0-alpha.0",
+  "cpu": [
+    "arm64"
+  ],
+  "main": "mocha-native.darwin-arm64.node",
+  "files": [
+    "mocha-native.darwin-arm64.node"
+  ],
+  "description": "Mocha Bridge NAPI - Rust napi-rs bindings for the Qt bridge",
+  "os": [
+    "darwin"
+  ]
+}
